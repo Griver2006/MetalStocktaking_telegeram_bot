@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, Message
 import datetime
-
+import pytz
 from utils.some_variable import metal_types, temp_operations
 from keyboards.inline_kb_markup import inline_kb_markup
 from api_sheets import record_plus_operation, record_minus_operation
@@ -20,7 +20,7 @@ async def do_plus_operation(message: Message):
         all_operations = AllOperations()
         date_time = str(message.date).split()  # Берём дату и время
         all_operations.date = datetime.datetime.strptime(date_time[0], "%Y-%m-%d").date()  # Записываем дату
-        all_operations.time = datetime.datetime.now().time()  # Записываем время
+        all_operations.time = datetime.datetime.now(pytz.timezone('Russia/Moscow'))  # Записываем время
         all_operations.metal = user.metal  # Записываем выбранный пользователем металл
         all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем колличество металла
         # Проверяем, указал ли пользователь цену и если не указал, записываем по цене из metal_types -
@@ -55,7 +55,8 @@ async def do_plus_operation(message: Message):
                                                         f' Сумма: {round(all_operations.sum)}',
                                        reply_markup=inline_kb_markup)
         # Собираем данные для записи операции в google sheets
-        data = [date_time[0].replace('-', '.'), str(datetime.datetime.now().time()), all_operations.metal,
+        data = [date_time[0].replace('-', '.'), str(datetime.datetime.now(pytz.timezone('Russia/Moscow')))[:7],
+                all_operations.metal,
                 all_operations.quantity, all_operations.price, all_operations.sum, all_operations.comment]
         dbs.commit()
         # Если пользователь записывает операцию через функцию 'Начать запись куша' из 'Меню кнопки Куш'
