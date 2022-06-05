@@ -55,7 +55,7 @@ async def do_plus_operation(message: Message):
                                                         f' Сумма: {round(all_operations.sum)}',
                                        reply_markup=inline_kb_markup)
         # Собираем данные для записи операции в google sheets
-        data = [date_time[0].replace('-', '.'), str(datetime.datetime.now(pytz.timezone('europe/moscow'))),
+        data = [date_time[0].replace('-', '.'), str(datetime.datetime.now(pytz.timezone('europe/moscow')).time())[:8],
                 all_operations.metal,
                 all_operations.quantity, all_operations.price, all_operations.sum, all_operations.comment]
         dbs.commit()
