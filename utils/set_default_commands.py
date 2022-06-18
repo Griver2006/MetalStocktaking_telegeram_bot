@@ -70,7 +70,11 @@ async def set_text(message):
             await Recording.waiting_for_data_record.set()
             return
         elif message.text == 'Куш':
+            dbs = db_session.create_session()
+            current_user = dbs.query(User).get(message.from_user.id)
             await message.bot.send_message(message.chat.id, 'Кнопки куша загружены',
+                                           reply_markup=reply_kb_kush)
+            await message.bot.send_message(message.chat.id, f'Процент для рабочего: {current_user.kush_percent}',
                                            reply_markup=reply_kb_kush)
             await Kush.waiting_for_kush_request.set()
         elif message.text == 'Отчёты':
