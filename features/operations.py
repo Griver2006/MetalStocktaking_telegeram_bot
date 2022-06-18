@@ -47,7 +47,7 @@ async def do_plus_operation(message: Message):
             inline_kb_markup.inline_keyboard.clear()
         # Добавляем кнопку с общей суммой клиента, если кнопка вызывается не внутри состояния то,
         # при нажатии на неё сбрасывает общую сумму клиента
-        inline_kb_markup.add(InlineKeyboardButton(f'Общая сумма: {user.client_amount}',
+        inline_kb_markup.add(InlineKeyboardButton(f'Общая сумма: {round(user.client_amount)}',
                                                   callback_data='reset_total_amount'))
         await message.bot.send_message(message.chat.id, f'Успешно добавлено - {all_operations.metal}: '
                                                         f'{all_operations.quantity},'
@@ -132,7 +132,7 @@ async def do_minus_operation(message):
             inline_kb_markup.inline_keyboard.clear()
         # Добавляем кнопку с общей суммой клиента, если кнопка вызывается не внутри состояния то,
         # при нажатии на неё сбрасывает общую сумму клиента
-        inline_kb_markup.add(InlineKeyboardButton(f'Общая сумма: {user.client_amount}',
+        inline_kb_markup.add(InlineKeyboardButton(f'Общая сумма: {round(user.client_amount)}',
                                                   callback_data='show_temp_amount'))
         await message.bot.send_message(message.chat.id, f'Успешно добавлено - {minus_operations.metal}: '
                                                         f'{minus_operations.quantity},'

@@ -2,7 +2,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import os
 
-# from config import config
 from data import db_session
 
 TOKEN = os.getenv('BOT_TOKEN')
