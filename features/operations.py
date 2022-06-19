@@ -26,7 +26,7 @@ async def do_plus_operation(message: Message):
         # Проверяем, указал ли пользователь цену и если не указал, записываем по цене из metal_types -
         # эту цену мы заранее передавали пользователю при выборе другого металла
         all_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text\
-            else float(user.price)
+            else float(metal_types[user.metal])
         all_operations.sum = all_operations.quantity * all_operations.price  # Записываем сумму
         all_operations.comment = ' '.join(split_message[2:])  # Записываем комментарий если он есть
 
