@@ -57,6 +57,8 @@ async def update_prices(message: types.Message):
         request_kush_prices = call_metals_prices(kush=True)
     metal_types = dict(request_metals_types)
     kush_prices = dict(request_kush_prices)
+    print(metal_types)
+    print(kush_prices)
     await message.bot.send_message(message.chat.id, 'Цены обновлены!', reply_markup=reply_kb_menu)
 
 
