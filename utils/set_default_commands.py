@@ -46,22 +46,6 @@ async def begin(message: types.Message):
     await message.bot.send_message(message.chat.id, 'Бот включён, приятного пользования!', reply_markup=reply_kb_menu)
 
 
-@dp.message_handler(commands=['update_prices'])
-async def update_prices(message: types.Message):
-    global metal_types, kush_prices
-    request_metals_types = call_metals_prices()
-    if not request_metals_types:
-        request_metals_types = call_metals_prices()
-    request_kush_prices = call_metals_prices(kush=True)
-    if not request_kush_prices:
-        request_kush_prices = call_metals_prices(kush=True)
-    metal_types = dict(request_metals_types)
-    kush_prices = dict(request_kush_prices)
-    print(metal_types)
-    print(kush_prices)
-    await message.bot.send_message(message.chat.id, 'Цены обновлены!', reply_markup=reply_kb_menu)
-
-
 @dp.message_handler(content_types=['text'])
 async def set_text(message):
     global temp_operations
