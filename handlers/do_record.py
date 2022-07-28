@@ -95,7 +95,7 @@ async def do_record(message: types.Message, state: FSMContext):
             operation[5] = operation[3] * operation[4]  # Изменяем сумму
             all_operations = AllOperations()
             all_operations.date = datetime.datetime.strptime(operation[0], "%Y.%m.%d").date()
-            all_operations.time = datetime.datetime.strptime(operation[1], "%H:%M").time()
+            all_operations.time = datetime.datetime.strptime(operation[1][:5], "%H:%M").time()
             all_operations.metal = operation[2]
             all_operations.quantity = operation[3]
             all_operations.price = operation[4]
