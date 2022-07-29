@@ -1,4 +1,4 @@
-from aiogram import executor
+from aiogram import executor, types
 from aiogram.utils.executor import start_webhook
 
 from loader import dp, WEBHOOK_URL, WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT
@@ -8,6 +8,8 @@ import utils.set_default_commands
 
 
 async def on_startup(dispatcher):
+    await dp.bot.set_my_commands([
+        types.BotCommand("update_prices", "Обновить цены")])
     await dp.bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
     await for_startup(dispatcher)
 

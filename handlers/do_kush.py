@@ -9,7 +9,7 @@ from states.kush import Kush
 from keyboards.reply_kb_menu import reply_kb_menu
 from keyboards.reply_kb_kush_recording import reply_kb_kush_recording
 
-from utils.some_variable import temp_operations
+import utils.some_variable
 from features.is_float_int import is_float_int
 
 from data import db_session
@@ -27,7 +27,8 @@ async def do_kush(message: types.Message, state: FSMContext):
         return
     elif message.text == 'Начать запись куша':
         # При запуске этой функции, сбрасываем или установливаем некоторые значение
-        temp_operations[message.from_user.id] = []  # Сбрасываем список операций который пользователь забыл записать
+        utils.some_variable.temp_operations[message.from_user.id] = []  # Сбрасываем список
+        # операций который пользователь забыл записать
         current_user.kush_recording = True  # Устанавливаем то, что пользователь в данный момент записывает куш
         current_user.client_amount = 0  # Сбрасываем общую сумму клиента
         await message.bot.send_message(message.chat.id, 'Куш записывается, впишите веса',
