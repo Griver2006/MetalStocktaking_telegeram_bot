@@ -13,7 +13,7 @@ from keyboards.reply_kb_kush import reply_kb_kush
 from keyboards.reply_kb_metals import reply_kb_metals
 from keyboards.reply_kb_kush_recording import reply_kb_kush_recording
 
-from utils.some_variable import temp_operations, metal_types, kush_prices
+import utils.some_variable
 from features.is_float_int import is_float_int
 from features.operations import do_minus_operation, do_plus_operation
 from features.change_metal import change_metal
@@ -38,7 +38,7 @@ async def do_record(message: types.Message, state: FSMContext):
     # 'Начать запись куша' из 'Меню кнопки Куш'
     if message.text == 'Вернуться в меню куша':
         # При выходе из этой функции, сбрасываем или установливаем некоторые значение
-        temp_operations[message.from_user.id] = []
+        utils.some_variable.temp_operations[message.from_user.id] = []
         current_user.kush_recording = False
         current_user.client_amount = 0
         await message.bot.send_message(message.chat.id, 'Записывание куша прервано, веса сброшены',
@@ -62,36 +62,38 @@ async def do_record(message: types.Message, state: FSMContext):
         # Передаём значение в функцию записи плюсовых операций
         await do_plus_operation(message)
     # Проверяем передал ли пользователь тип металла
-    elif message.text in metal_types.keys():
+    elif message.text in utils.some_variable.metal_types.keys():
         # Переходим в функцию и сменяем тип металла
         await change_metal(message)
     elif message.text == 'Сбросить общую сумму':
         await reset_total_amount(message)
     elif message.text in 'Веса вписаны':
         # Проверяем вписал ли пользователь хоть какой-то вес
-        if not temp_operations[message.from_user.id]:
+        if not utils.some_variable.temp_operations[message.from_user.id]:
             await message.bot.send_message(message.chat.id, 'Вы не вписали не один вес',
                                            reply_markup=reply_kb_metals)
             return
         # Общая сумма сум по основным ценам 'Актуальный прайс'
-        total_amount_tmp_s = round(sum(operation[5] for operation in temp_operations[message.from_user.id]))
+        total_amount_tmp_s = round(sum(operation[5] for operation in
+                                       utils.some_variable.temp_operations[message.from_user.id]))
         # Сумма рабочего который разобрал куш клиента
         worker_amount = round(total_amount_tmp_s / 100 * current_user.kush_percent)
         # Изменяем операции на новые цены, а также изменяем сумму под новую цену
-        for operation in temp_operations[message.from_user.id]:
-            operation[4] = float(kush_prices[operation[2]].replace(',', '.'))
+        for operation in utils.some_variable.temp_operations[message.from_user.id]:
+            operation[4] = float(utils.some_variable.kush_prices[operation[2]].replace(',', '.'))
             operation[5] = operation[3] * operation[4]
-        employer_amount = sum(operation[3] * float(kush_prices['Черный'].replace(',', '.'))
-                              for operation in temp_operations[message.from_user.id])
+        employer_amount = sum(operation[3] * float(utils.some_variable.kush_prices['Черный'].replace(',', '.'))
+                              for operation in utils.some_variable.temp_operations[message.from_user.id])
         # Сумма клиента чей куш был разобран
-        client_amount = round(sum(operation[5] for operation in temp_operations[message.from_user.id])
+        client_amount = round(sum(operation[5] for operation in
+                                  utils.some_variable.temp_operations[message.from_user.id])
                               - employer_amount - worker_amount)
         information = f'\n{"---" * 10}\n'.join([f'Сумма рабочего: {worker_amount}', f'Ваша Сумма: {client_amount}'])
         await message.bot.send_message(message.chat.id, information,
                                        reply_markup=reply_kb_kush)
         # Записываем все операции из temp_operations с изменёнными ценой и суммой в бд и google sheets
-        for operation in temp_operations[message.from_user.id]:
-            operation[4] = float(kush_prices[operation[2]].replace(',', '.'))  # Изменяем цену
+        for operation in utils.some_variable.temp_operations[message.from_user.id]:
+            operation[4] = float(utils.some_variable.kush_prices[operation[2]].replace(',', '.'))  # Изменяем цену
             operation[5] = operation[3] * operation[4]  # Изменяем сумму
             all_operations = AllOperations()
             all_operations.date = datetime.datetime.strptime(operation[0], "%Y.%m.%d").date()
@@ -103,7 +105,7 @@ async def do_record(message: types.Message, state: FSMContext):
             all_operations.comment = operation[6]
             dbs.add(all_operations)
             record_plus_operation(operation)
-        temp_operations[message.from_user.id] = []  # Очищаем список временных операций
+        utils.some_variable.temp_operations[message.from_user.id] = []  # Очищаем список временных операций
         current_user.kush_recording = False  # Сбрасываем записывание металла
         current_user.client_amount = 0  # Также сбрасываем общую сумму клиента
         dbs.commit()
@@ -114,7 +116,8 @@ async def do_record(message: types.Message, state: FSMContext):
         # Проверяем записывает пользователь куш
         if current_user.kush_recording:
             # Если так то, удаляем операцию из временных операций
-            temp_operations[message.from_user.id] = temp_operations[message.from_user.id][:-1]
+            utils.some_variable.temp_operations[message.from_user.id] =\
+                utils.some_variable.temp_operations[message.from_user.id][:-1]
         else:
             # Удаляем операцию из google sheets
             delete_last_row()

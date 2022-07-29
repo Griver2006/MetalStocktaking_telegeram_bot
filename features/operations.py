@@ -1,7 +1,8 @@
 from aiogram.types import InlineKeyboardButton, Message
 import datetime
 import pytz
-from utils.some_variable import metal_types, temp_operations
+import utils.some_variable
+# from utils.some_variable import metal_types, temp_operations
 from keyboards.inline_kb_markup import inline_kb_markup
 from api_sheets import record_plus_operation, record_minus_operation
 
@@ -23,10 +24,10 @@ async def do_plus_operation(message: Message):
         all_operations.time = datetime.datetime.strptime(date_time[1], "%H:%M:%S").time()  # Записываем время
         all_operations.metal = user.metal  # Записываем выбранный пользователем металл
         all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем колличество металла
-        # Проверяем, указал ли пользователь цену и если не указал, записываем по цене из metal_types -
+        # Проверяем, указал ли пользователь цену и если не указал, записываем по цене из utils.some_variable.metal_types -
         # эту цену мы заранее передавали пользователю при выборе другого металла
         all_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text\
-            else float(metal_types[user.metal])
+            else float(utils.some_variable.metal_types[user.metal])
         all_operations.sum = all_operations.quantity * all_operations.price  # Записываем сумму
         all_operations.comment = ' '.join(split_message[2:])  # Записываем комментарий если он есть
 
@@ -39,7 +40,7 @@ async def do_plus_operation(message: Message):
             dbs.add(all_operations)
         # Сбрасываем значения у пользователя по умолчанию
         user.metal = 'Черный'
-        user.price = float(metal_types['Черный'])
+        user.price = float(utils.some_variable.metal_types['Черный'])
         # Также прибавляем получившуюся сумму к общей сумме клиента
         user.client_amount = user.client_amount + all_operations.sum
         # Костыль для изменения общей суммы клиента, если кнопка с общей суммой клиента уже есть то, удаляем её
@@ -62,7 +63,7 @@ async def do_plus_operation(message: Message):
         # Если пользователь записывает операцию через функцию 'Начать запись куша' из 'Меню кнопки Куш'
         # то добавляем операцию в temp_operations и не записываем операцию в google sheets
         if user.kush_recording:
-            temp_operations[message.from_user.id].append(data)
+            utils.some_variable.temp_operations[message.from_user.id].append(data)
             return
         # Если функция дошла до этого момента, передаём данные для записи операции в google sheets
         record_plus_operation(data)
@@ -124,7 +125,7 @@ async def do_minus_operation(message):
         dbs.add(all_operations)
         # Сбрасываем значения у пользователя по умолчанию
         user.metal = 'Черный'
-        user.price = float(metal_types['Черный'])
+        user.price = float(utils.some_variable.metal_types['Черный'])
         # Также прибавляем получившуюся сумму к общей сумме клиента
         user.client_amount = user.client_amount - minus_operations.sum
         # Костыль для изменения общей суммы клиента, если кнопка с общей суммой клиента уже есть то, удаляем её
