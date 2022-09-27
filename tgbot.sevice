@@ -1,0 +1,14 @@
+[Unit]
+Description=Telegram Bot
+After=network.target
+
+[Service]
+User=ramzan
+Group=ramzan
+
+WorkingDirectory=/home/ramzan/MetalStocktaking_telegeram_bot/
+Environment="PYTHONPATH=/home/ramzan/MetalStocktaking_telegeram_bot/"
+ExecStart=/home/ramzan/MetalStocktaking_telegeram_bot/.venv/bin/python /home/ramzan/MetalStocktaking_telegeram_bot/app.py
+
+[Install]
+WantedBy=multi-user.target
