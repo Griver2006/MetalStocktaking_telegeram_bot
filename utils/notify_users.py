@@ -4,6 +4,7 @@ from data.users import User
 
 
 async def for_startup(dp):
+    pass
     # При запуске бота возвращяем всех пользователей в меню
-    for user_id in db_session.create_session().query(User.id).all():
-        await dp.bot.send_message(user_id[0], 'Бот запущен!', reply_markup=reply_kb_menu)
+    # for user_id in db_session.create_session().query(User.id).all():
+    #     await dp.bot.send_message(user_id[0], 'Бот запущен!', reply_markup=reply_kb_menu)

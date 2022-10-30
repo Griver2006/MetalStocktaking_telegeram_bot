@@ -23,8 +23,9 @@ async def do_plus_operation(message: Message):
         all_operations.date = datetime.datetime.strptime(date_time[0], "%Y-%m-%d").date()  # Записываем дату
         all_operations.time = datetime.datetime.strptime(date_time[1], "%H:%M:%S").time()  # Записываем время
         all_operations.metal = user.metal  # Записываем выбранный пользователем металл
-        all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем колличество металла
-        # Проверяем, указал ли пользователь цену и если не указал, записываем по цене из utils.some_variable.metal_types -
+        all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем количество металла
+        # Проверяем, указал ли пользователь цену и если не указал,
+        # записываем по цене из utils.some_variable.metal_types -
         # эту цену мы заранее передавали пользователю при выборе другого металла
         all_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text\
             else float(utils.some_variable.metal_types[user.metal])
@@ -61,7 +62,7 @@ async def do_plus_operation(message: Message):
                 all_operations.quantity, all_operations.price, all_operations.sum, all_operations.comment]
         dbs.commit()
         # Если пользователь записывает операцию через функцию 'Начать запись куша' из 'Меню кнопки Куш'
-        # то добавляем операцию в temp_operations и не записываем операцию в google sheets
+        # - то добавляем операцию в temp_operations и не записываем операцию в google sheets
         if user.kush_recording:
             utils.some_variable.temp_operations[message.from_user.id].append(data)
             return

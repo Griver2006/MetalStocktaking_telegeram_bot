@@ -1,4 +1,3 @@
-import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from api_sheets import record_plus_operation, delete_last_row
@@ -18,6 +17,7 @@ from features.is_float_int import is_float_int
 from features.operations import do_minus_operation, do_plus_operation
 from features.change_metal import change_metal
 from features.reset_total_amount import reset_total_amount
+from features.add_to_db import add_to_all_operations
 
 from data import db_session
 from data.users import User
@@ -95,15 +95,9 @@ async def do_record(message: types.Message, state: FSMContext):
         for operation in utils.some_variable.temp_operations[message.from_user.id]:
             operation[4] = float(utils.some_variable.kush_prices[operation[2]].replace(',', '.'))  # Изменяем цену
             operation[5] = operation[3] * operation[4]  # Изменяем сумму
-            all_operations = AllOperations()
-            all_operations.date = datetime.datetime.strptime(operation[0], "%Y.%m.%d").date()
-            all_operations.time = datetime.datetime.strptime(operation[1][:5], "%H:%M").time()
-            all_operations.metal = operation[2]
-            all_operations.quantity = operation[3]
-            all_operations.price = operation[4]
-            all_operations.sum = operation[5]
-            all_operations.comment = operation[6]
-            dbs.add(all_operations)
+            # Функция добавляющая операцию в дб
+            add_to_all_operations(operation[0], operation[1][:5], operation[2], operation[3], operation[4],
+                                  operation[5], operation[6])
             record_plus_operation(operation)
         utils.some_variable.temp_operations[message.from_user.id] = []  # Очищаем список временных операций
         current_user.kush_recording = False  # Сбрасываем записывание металла
@@ -115,13 +109,13 @@ async def do_record(message: types.Message, state: FSMContext):
     elif message.text == 'Удалить последную запись':
         # Проверяем записывает пользователь куш
         if current_user.kush_recording:
-            # Если так то, удаляем операцию из временных операций
+            # Если так, то удаляем операцию из временных операций
             utils.some_variable.temp_operations[message.from_user.id] =\
                 utils.some_variable.temp_operations[message.from_user.id][:-1]
         else:
             # Удаляем операцию из google sheets
             delete_last_row()
-            # Берём последную операцию
+            # Берём последнюю операцию
             last_row = dbs.query(AllOperations).order_by(AllOperations.id.desc()).first()
             # Удаляем её из бд
             dbs.delete(last_row)

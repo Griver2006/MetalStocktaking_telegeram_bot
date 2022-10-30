@@ -5,9 +5,7 @@ import os
 
 from data import db_session
 
-load_dotenv()
-
-TOKEN = os.getenv('BOT_TOKEN')
+TOKEN = 'REMOVED_TELEGRAM_BOT_TOKEN'
 
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
