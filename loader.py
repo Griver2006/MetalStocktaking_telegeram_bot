@@ -5,9 +5,7 @@ import os
 
 from data import db_session
 
-load_dotenv()
-
-TOKEN = os.getenv('BOT_TOKEN')
+TOKEN = '5171093905:AAFRlbv5jY6TdQfqOtL03c8VCgtYzQfDwPg'
 
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
