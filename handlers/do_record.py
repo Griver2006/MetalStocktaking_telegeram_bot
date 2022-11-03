@@ -96,7 +96,7 @@ async def do_record(message: types.Message, state: FSMContext):
             operation[4] = float(utils.some_variable.kush_prices[operation[2]].replace(',', '.'))  # Изменяем цену
             operation[5] = operation[3] * operation[4]  # Изменяем сумму
             # Функция добавляющая операцию в дб
-            add_to_all_operations(operation[0], operation[1][:5], operation[2], operation[3], operation[4],
+            add_to_all_operations(operation[0], operation[1][:8], operation[2], operation[3], operation[4],
                                   operation[5], operation[6])
             record_plus_operation(operation)
         utils.some_variable.temp_operations[message.from_user.id] = []  # Очищаем список временных операций

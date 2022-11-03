@@ -6,6 +6,8 @@ import utils.some_variable
 from keyboards.inline_kb_markup import inline_kb_markup
 from api_sheets import record_plus_operation, record_minus_operation
 
+from features.add_to_db import add_to_all_operations
+
 from data import db_session
 from data.users import User
 from data.minus_operations import MinusOperations
@@ -18,19 +20,17 @@ async def do_plus_operation(message: Message):
         dbs = db_session.create_session()
         user = dbs.query(User).get(message.from_user.id)
         # Создаём и записываем значения в AllOperations
-        all_operations = AllOperations()
         date_time = str(message.date).split()  # Берём дату и время
-        all_operations.date = datetime.datetime.strptime(date_time[0], "%Y-%m-%d").date()  # Записываем дату
-        all_operations.time = datetime.datetime.strptime(date_time[1], "%H:%M:%S").time()  # Записываем время
-        all_operations.metal = user.metal  # Записываем выбранный пользователем металл
-        all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем количество металла
+        metal = user.metal  # Записываем выбранный пользователем металл
+        quantity = float(split_message[0].replace(',', '.'))  # Записываем количество металла
+
         # Проверяем, указал ли пользователь цену и если не указал,
         # записываем по цене из utils.some_variable.metal_types -
         # эту цену мы заранее передавали пользователю при выборе другого металла
-        all_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text\
+        price = float(split_message[1].replace(',', '.')) if ' ' in message.text \
             else float(utils.some_variable.metal_types[user.metal])
-        all_operations.sum = all_operations.quantity * all_operations.price  # Записываем сумму
-        all_operations.comment = ' '.join(split_message[2:])  # Записываем комментарий если он есть
+        amount = quantity * price  # Записываем сумму
+        comment = ' '.join(split_message[2:])  # Записываем комментарий если он есть
 
         # Здесь мы проверяем, записывает ли пользователь операцию через функцию
         # 'Начать запись куша' из 'Меню кнопки Куш'
@@ -38,12 +38,13 @@ async def do_plus_operation(message: Message):
         # Если пользователь всё же записывает через эту функцию то,
         # операцию мы запишем позже по другой цене и в другой функции
         if not user.kush_recording:
-            dbs.add(all_operations)
+            add_to_all_operations(date_time[0], date_time[1], metal, quantity, price, amount, comment)
+
         # Сбрасываем значения у пользователя по умолчанию
         user.metal = 'Черный'
         user.price = float(utils.some_variable.metal_types['Черный'])
         # Также прибавляем получившуюся сумму к общей сумме клиента
-        user.client_amount = user.client_amount + all_operations.sum
+        user.client_amount = user.client_amount + amount
         # Костыль для изменения общей суммы клиента, если кнопка с общей суммой клиента уже есть то, удаляем её
         if len(inline_kb_markup.inline_keyboard) != 0:
             inline_kb_markup.inline_keyboard.clear()
@@ -51,15 +52,14 @@ async def do_plus_operation(message: Message):
         # при нажатии на неё сбрасывает общую сумму клиента
         inline_kb_markup.add(InlineKeyboardButton(f'Общая сумма: {round(user.client_amount)}',
                                                   callback_data='reset_total_amount'))
-        await message.bot.send_message(message.chat.id, f'Успешно добавлено - {all_operations.metal}: '
-                                                        f'{all_operations.quantity},'
-                                                        f' Цена: {all_operations.price},'
-                                                        f' Сумма: {round(all_operations.sum)}',
+        await message.bot.send_message(message.chat.id, f'Успешно добавлено - {metal}: '
+                                                        f'{quantity},'
+                                                        f' Цена: {price},'
+                                                        f' Сумма: {round(amount)}',
                                        reply_markup=inline_kb_markup)
         # Собираем данные для записи операции в google sheets
         data = [date_time[0].replace('-', '.'), str(datetime.datetime.now(pytz.timezone('europe/moscow')).time())[:8],
-                all_operations.metal,
-                all_operations.quantity, all_operations.price, all_operations.sum, all_operations.comment]
+                metal, quantity, price, amount, comment]
         dbs.commit()
         # Если пользователь записывает операцию через функцию 'Начать запись куша' из 'Меню кнопки Куш'
         # - то добавляем операцию в temp_operations и не записываем операцию в google sheets
@@ -84,17 +84,17 @@ async def do_minus_operation(message):
         minus_operations.metal = user.metal  # Записываем выбранный пользователем металл
         # Записываем дату
         minus_operations.date = datetime.datetime.strptime(str(message.date).split()[0], "%Y-%m-%d").date()
-        minus_operations.quantity = abs(float(split_message[0].replace(',', '.')))  # Записываем колличество
+        minus_operations.quantity = abs(float(split_message[0].replace(',', '.')))  # Записываем количество
         minus_operations.task = ''  # Записываем почему был продан металл
         minus_operations.where = ''  # Записываем где был продан металл
         # Это проверка, если пользователь просто хочет сделать Корректировку
         # Это проверка нужна для того, чтобы записать минусовую операцию без цены и суммы
         if split_message[-1] != 'Корректировка':
-            # Если 'Корректировки' нету то
+            # Если 'Корректировки' нет то
             minus_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text \
                 else float(user.price)  # Записываем цену металла которую передал пользователь
             minus_operations.sum = minus_operations.quantity * minus_operations.price  # Записываем сумму
-            # Делаем проверку вписал ли пользователь что-то после колличества и суммы
+            # Делаем проверку вписал ли пользователь что-то после количества и суммы
             if len(split_message[2:]) == 1:
                 # Если вписал только одно значение,
                 # то записываем это значение туда где нужно указать 'где был продан металл'
@@ -117,7 +117,7 @@ async def do_minus_operation(message):
         all_operations.date = datetime.datetime.strptime(date_time[0], "%Y-%m-%d").date()  # Записываем дату
         all_operations.time = datetime.datetime.now().time()  # Записываем время
         all_operations.metal = user.metal  # Записываем выбранный пользователем металл
-        all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем колличество
+        all_operations.quantity = float(split_message[0].replace(',', '.'))  # Записываем количество
         all_operations.price = minus_operations.price  # Записываем цену
         all_operations.sum = all_operations.quantity * all_operations.price  # Записываем сумму
         all_operations.comment = minus_operations.where  # Записываем комментарий
