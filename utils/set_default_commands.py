@@ -75,5 +75,5 @@ async def set_text(message):
             await message.bot.send_message(message.chat.id, GUIDE,
                                            reply_markup=reply_kb_menu)
         else:
-            await message.bot.send_message(message.chat.id, 'В этом боте нету такой котегории',
+            await message.bot.send_message(message.chat.id, 'В этом боте нету такой категории',
                                            reply_markup=reply_kb_menu)
