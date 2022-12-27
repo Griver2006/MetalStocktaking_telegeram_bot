@@ -37,7 +37,7 @@ async def do_record(message: types.Message, state: FSMContext):
     # Здесь мы проверяем, записывает ли пользователь операцию через функцию
     # 'Начать запись куша' из 'Меню кнопки Куш'
     if message.text == 'Вернуться в меню куша':
-        # При выходе из этой функции, сбрасываем или установливаем некоторые значение
+        # При выходе из этой функции, сбрасываем или устанавливаем некоторые значение
         utils.some_variable.temp_operations[message.from_user.id] = []
         current_user.kush_recording = False
         current_user.client_amount = 0
