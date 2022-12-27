@@ -71,7 +71,7 @@ async def do_record(message: types.Message, state: FSMContext):
         # Проверяем вписал ли пользователь хоть какой-то вес
         if not utils.some_variable.temp_operations[message.from_user.id]:
             await message.bot.send_message(message.chat.id, 'Вы не вписали не один вес',
-                                           reply_markup=reply_kb_kush)
+                                           reply_markup=reply_kb_kush_recording)
             return
         # Общая сумма сум по основным ценам 'Актуальный прайс'
         total_amount_tmp_s = round(sum(operation[5] for operation in
