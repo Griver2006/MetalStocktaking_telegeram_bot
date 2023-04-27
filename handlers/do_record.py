@@ -55,7 +55,7 @@ async def do_record(message: types.Message, state: FSMContext):
             # Передаём значение в функцию записи минусовых операций
             await do_minus_operation(message)
         else:
-            await message.answer("Вы не можете добавиь минусовую операцию во время записи куша")
+            await message.answer("Вы не можете добавить минусовую операцию во время записи куша")
             return
     # Проверяем является ли данное пользователем первое значение числом
     elif is_float_int(message.text.split()[0]):
