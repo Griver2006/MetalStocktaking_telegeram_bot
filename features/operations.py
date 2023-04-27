@@ -83,17 +83,17 @@ async def do_minus_operation(message):
         minus_operations.metal = user.metal  # Записываем выбранный пользователем металл
         # Записываем дату
         minus_operations.date = datetime.datetime.strptime(str(message.date).split()[0], "%Y-%m-%d").date()
-        minus_operations.quantity = abs(float(split_message[0].replace(',', '.')))  # Записываем колличество
+        minus_operations.quantity = abs(float(split_message[0].replace(',', '.')))  # Записываем количество
         minus_operations.task = ''  # Записываем почему был продан металл
         minus_operations.where = ''  # Записываем где был продан металл
         # Это проверка, если пользователь просто хочет сделать Корректировку
         # Это проверка нужна для того, чтобы записать минусовую операцию без цены и суммы
         if split_message[-1] != 'Корректировка':
-            # Если 'Корректировки' нету то
+            # Если 'Корректировки' нет то
             minus_operations.price = float(split_message[1].replace(',', '.')) if ' ' in message.text \
                 else float(user.price)  # Записываем цену металла которую передал пользователь
             minus_operations.sum = minus_operations.quantity * minus_operations.price  # Записываем сумму
-            # Делаем проверку вписал ли пользователь что-то после колличества и суммы
+            # Делаем проверку вписал ли пользователь что-то после количества и суммы
             if len(split_message[2:]) == 1:
                 # Если вписал только одно значение,
                 # то записываем это значение туда где нужно указать 'где был продан металл'
@@ -144,8 +144,8 @@ async def do_minus_operation(message):
         # Если функция дошла до этого момента, передаём данные для записи операции в google sheets
         record_minus_operation([minus_operations.metal, minus_operations.quantity, minus_operations.price,
                                 minus_operations.sum,
-                                str(message.date).split()[0].replace('-', '.'), minus_operations.task,
-                                minus_operations.where])
+                                str(message.date).split()[0].replace('-', '.'), minus_operations.where,
+                                minus_operations.task])
     except:
         await message.bot.send_message(message.chat.id,
                                        f'Вы неправильно вписали данные, проверьте корректность в руководстве')
