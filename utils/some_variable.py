@@ -8,6 +8,7 @@ from keyboards.reply_kb_menu import reply_kb_menu
 
 metal_types = dict(call_metals_prices())
 kush_prices = dict(call_metals_prices(kush=True))
+print(kush_prices)
 clean_weights_buttons = [name[0] for name in db_session.create_session().query(
     ButtonsCleanWeights.name_clean_weight).all()]
 
