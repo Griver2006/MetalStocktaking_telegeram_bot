@@ -112,16 +112,16 @@ async def do_record(message: types.Message, state: FSMContext):
         # Возвращаемся в состояния(Меню кнопки куш)
         await Kush.waiting_for_kush_request.set()
         return
-    elif message.text == 'Удалить последную запись':
+    elif message.text == 'Удалить последнюю запись':
         # Проверяем записывает пользователь куш
         if current_user.kush_recording:
-            # Если так то, удаляем операцию из временных операций
+            # Если так, то удаляем операцию из временных операций
             utils.some_variable.temp_operations[message.from_user.id] =\
                 utils.some_variable.temp_operations[message.from_user.id][:-1]
         else:
             # Удаляем операцию из google sheets
             delete_last_row()
-            # Берём последную операцию
+            # Берём последнюю операцию
             last_row = dbs.query(AllOperations).order_by(AllOperations.id.desc()).first()
             # Удаляем её из бд
             dbs.delete(last_row)
