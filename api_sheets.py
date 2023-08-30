@@ -28,7 +28,6 @@ def call_metals_prices(kush=False):
     if kush:
         result = service.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                       range=KUSH_PRICE).execute()
-        print(result.get('values', []))
     else:
         result = service.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                       range=ACTUAL_PRICE).execute()
