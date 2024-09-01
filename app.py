@@ -9,6 +9,7 @@ import utils.set_default_commands
 
 async def on_startup(dispatcher):
     await dp.bot.set_my_commands([
+        types.BotCommand("start", "Запустить бота"),
         types.BotCommand("update_prices", "Обновить цены")])
     await for_startup(dispatcher)
 
@@ -18,4 +19,4 @@ async def on_shutdown(dispatcher):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True, on_startup=for_startup)
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
