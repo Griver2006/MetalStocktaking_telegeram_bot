@@ -5,10 +5,16 @@ After=network.target
 [Service]
 User=ramzan
 Group=ramzan
-
 WorkingDirectory=/home/ramzan/MetalStocktaking_telegeram_bot/
 Environment="PYTHONPATH=/home/ramzan/MetalStocktaking_telegeram_bot/"
+EnvironmentFile=/home/ramzan/MetalStocktaking_telegeram_bot/.env
 ExecStart=/home/ramzan/MetalStocktaking_telegeram_bot/.venv/bin/python /home/ramzan/MetalStocktaking_telegeram_bot/app.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+UMask=0077
 
 [Install]
 WantedBy=multi-user.target

@@ -1,8 +1,33 @@
-# Byte-compiled / optimized / DLL files
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+credentials*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
+# Local state and generated files
+db/*.db
+db/*.db-*
+photos_of_clean_weights/*.jpg
+photos_of_clean_weights/*.jpeg
+photos_of_clean_weights/*.png
+
+# Editors and operating systems
 .idea/
-/.idea/
-/venv/
+.vscode/
+.DS_Store
+Thumbs.db
