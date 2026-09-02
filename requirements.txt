@@ -1,5 +1,5 @@
 aiogram==2.25.2
-aiohttp==3.8.6
+aiohttp==3.14.3
 google-api-python-client>=2.176.0,<3
 google-auth>=2.40.0,<3
 python-dotenv>=1.2.2,<2
