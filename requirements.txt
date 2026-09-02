@@ -2,6 +2,6 @@ aiogram==2.25.2
 aiohttp==3.8.6
 google-api-python-client>=2.176.0,<3
 google-auth>=2.40.0,<3
-python-dotenv>=1.2.2,<2
+python-dotenv>=1.2.3,<2
 pytz>=2025.2
 SQLAlchemy>=1.4.54,<2
